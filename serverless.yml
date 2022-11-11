@@ -1,0 +1,11 @@
+service: recruitment-task-4c9aa6a7-01cb-4421-9ea8-a47b48b3f873
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+functions:
+  hello:
+    handler: handler.hello
