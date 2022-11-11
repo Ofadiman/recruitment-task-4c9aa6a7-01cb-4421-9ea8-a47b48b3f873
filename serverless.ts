@@ -33,6 +33,29 @@ const serverlessConfiguration: AWS = {
       ],
     },
   },
+  resources: {
+    Resources: {
+      MediaTemporaryFiles536155158c03: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          BucketName: 'media-temporary-files-536155158c03',
+          LifecycleConfiguration: {
+            Rules: [
+              {
+                Id: 'ExpireTemporaryObjects',
+                Prefix: '/',
+                Status: 'Enabled',
+                ExpirationInDays: 30,
+              },
+            ],
+          },
+          VersioningConfiguration: {
+            Status: 'Enabled',
+          },
+        },
+      },
+    },
+  },
 }
 
 module.exports = serverlessConfiguration
