@@ -21,6 +21,17 @@ const serverlessConfiguration: AWS = {
         },
       ],
     },
+    getPreSignedUploadUrl: {
+      handler: 'getPreSignedUploadUrl/handler.main',
+      events: [
+        {
+          http: {
+            method: 'get',
+            path: 'get-pre-signed-upload-url',
+          },
+        },
+      ],
+    },
   },
 }
 
