@@ -1,4 +1,4 @@
-import type { AWS } from '@serverless/typescript';
+import type { AWS } from '@serverless/typescript'
 
 const serverlessConfiguration: AWS = {
   service: 'media',
@@ -17,11 +17,11 @@ const serverlessConfiguration: AWS = {
           http: {
             method: 'get',
             path: 'hello',
-          }
-        }
-      ]
-    }
-  }
+          },
+        },
+      ],
+    },
+  },
 }
 
-module.exports = serverlessConfiguration;
+module.exports = serverlessConfiguration

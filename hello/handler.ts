@@ -1,6 +1,6 @@
 import { APIGatewayEvent } from 'aws-lambda'
 
-export const main =  async (event: APIGatewayEvent) => {
+export const main = async (event: APIGatewayEvent) => {
   return {
     statusCode: 200,
     body: JSON.stringify(
@@ -9,7 +9,7 @@ export const main =  async (event: APIGatewayEvent) => {
         input: event,
       },
       null,
-      2
+      2,
     ),
-  };
-};
+  }
+}
