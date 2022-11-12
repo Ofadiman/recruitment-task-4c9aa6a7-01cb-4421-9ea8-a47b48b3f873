@@ -7,3 +7,9 @@ jspm_packages
 
 # IDE files
 .idea/
+
+# Build files
+.build/
+
+# Personal
+personal/

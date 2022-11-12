@@ -9,6 +9,14 @@ const serverlessConfiguration: AWS = {
     name: 'aws',
     runtime: 'nodejs16.x',
   },
+  custom: {
+    webpack: {
+      webpackConfig: 'webpack.config.js',
+      includeModules: true,
+      packager: 'npm',
+      excludeFiles: './**/*.test.ts',
+    },
+  },
   functions: {
     hello: {
       handler: 'hello/handler.main',
