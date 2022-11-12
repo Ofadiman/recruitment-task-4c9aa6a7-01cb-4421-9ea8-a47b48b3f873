@@ -7,23 +7,63 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import { s3MetadataAdapter } from '../utils/S3MetadataAdapter'
 import { s3Client } from '../utils/S3Client'
+import { z } from 'zod'
 
 dayjs.extend(duration)
 
+const dimensionSchema = z.preprocess((value) => Number(value), z.number().int().gte(100).lte(1000))
+const sizeStringSchema = z.string().refine(
+  (value) => {
+    const [x, y] = value.split('x')
+    const parseXResult = dimensionSchema.safeParse(x)
+    if (!parseXResult.success) {
+      return false
+    }
+    const parsedYResult = dimensionSchema.safeParse(y)
+    if (!parsedYResult.success) {
+      return false
+    }
+
+    return true
+  },
+  {
+    message: `Incorrect size string format.`,
+  },
+)
+
+const queryParametersSchema = z
+  .object({
+    size: z.array(sizeStringSchema).transform((value) => {
+      return value.map((item) => {
+        const [x, y] = item.split('x')
+        return {
+          x: Number.parseInt(x!),
+          y: Number.parseInt(y!),
+        }
+      })
+    }),
+  })
+  .strict()
+
 export const main = middy(
   async (event: APIGatewayEvent, _context: Context): Promise<APIGatewayProxyResult> => {
-    console.log(`event.queryStringParameters`)
-    console.log(event.queryStringParameters)
+    console.log(event.multiValueQueryStringParameters)
+    const queryStringParseResult = queryParametersSchema.safeParse(
+      event.multiValueQueryStringParameters,
+    )
+    if (!queryStringParseResult.success) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify(queryStringParseResult.error.flatten()),
+      }
+    }
 
     const batchId = v4()
     const command = new PutObjectCommand({
       Bucket: 'media-temporary-files-536155158c03',
       Key: batchId,
       Metadata: {
-        sizes: s3MetadataAdapter.serialize([
-          { x: 320, y: 320 },
-          { x: 640, y: 640 },
-        ]),
+        sizes: s3MetadataAdapter.serialize(queryStringParseResult.data.size),
       },
     })
 
