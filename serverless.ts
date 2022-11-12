@@ -8,6 +8,13 @@ const serverlessConfiguration: AWS = {
     region: 'eu-west-1',
     name: 'aws',
     runtime: 'nodejs16.x',
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: 's3:*',
+        Resource: 'arn:aws:s3:::media-temporary-files-536155158c03/*',
+      },
+    ],
   },
   custom: {
     webpack: {
