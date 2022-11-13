@@ -14,9 +14,6 @@ const batchParamsSchema = z
 
 export const main = middy(
   async (event: APIGatewayEvent, _context: Context): Promise<APIGatewayProxyResult> => {
-    console.info(`Event path parameters.`)
-    console.log(event.pathParameters)
-
     const parsePathParamsResult = batchParamsSchema.safeParse(event.pathParameters)
     if (!parsePathParamsResult.success) {
       return {
@@ -35,8 +32,6 @@ export const main = middy(
       TableName: getenv(DYNAMODB_METADATA_TABLE_KEY),
     })
     const scanCommandOutput = await dynamodbClient.send(scanCommand)
-    console.info(`Scan command.`)
-    console.info(scanCommand)
 
     return {
       statusCode: 200,

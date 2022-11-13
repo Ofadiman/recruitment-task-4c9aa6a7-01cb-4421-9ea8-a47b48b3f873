@@ -10,19 +10,13 @@ import { firstOrThrow } from '../utils/firstOrThrow'
 
 export const main = middy(async (event: S3Event, _context: Context) => {
   const s3EventRecord = firstOrThrow(event.Records)
-  console.log(JSON.stringify(s3EventRecord, null, 2))
 
   const headObjectCommand = new HeadObjectCommand({
     Bucket: s3EventRecord.s3.bucket.name,
     Key: s3EventRecord.s3.object.key,
   })
-  console.info(`Head object command input.`)
-  console.info(headObjectCommand)
 
   const headObjectCommandOutput = await s3Client.send(headObjectCommand)
-  console.info(`Head object command input.`)
-  console.info(headObjectCommandOutput)
-
   if (!headObjectCommandOutput.Metadata) {
     console.info(`Object does not have any metadata.`)
     return
@@ -48,8 +42,6 @@ export const main = middy(async (event: S3Event, _context: Context) => {
       },
     },
   })
-  console.info(`Put item command input.`)
-  console.info(putItemCommand)
 
   await dynamodbClient.send(putItemCommand)
 })

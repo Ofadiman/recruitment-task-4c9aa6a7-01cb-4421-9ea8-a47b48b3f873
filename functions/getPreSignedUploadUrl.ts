@@ -49,7 +49,6 @@ const queryParametersSchema = z
 
 export const main = middy(
   async (event: APIGatewayEvent, _context: Context): Promise<APIGatewayProxyResult> => {
-    console.log(event.multiValueQueryStringParameters)
     const queryStringParseResult = queryParametersSchema.safeParse(
       event.multiValueQueryStringParameters,
     )
