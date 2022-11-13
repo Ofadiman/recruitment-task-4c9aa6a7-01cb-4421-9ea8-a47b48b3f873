@@ -3,6 +3,8 @@ import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda'
 import { z } from 'zod'
 import { dynamodbClient } from '../utils/DynamoDBClient'
 import { ScanCommand } from '@aws-sdk/client-dynamodb'
+import getenv from 'getenv'
+import { DYNAMODB_METADATA_TABLE_KEY } from '../env'
 
 const batchParamsSchema = z
   .object({
@@ -30,7 +32,7 @@ export const main = middy(
           S: parsePathParamsResult.data.batchId,
         },
       },
-      TableName: 'media-9ee1440f-bcae-4831-9b43-2de05865ce15',
+      TableName: getenv(DYNAMODB_METADATA_TABLE_KEY),
     })
     const scanCommandOutput = await dynamodbClient.send(scanCommand)
     console.info(`Scan command.`)

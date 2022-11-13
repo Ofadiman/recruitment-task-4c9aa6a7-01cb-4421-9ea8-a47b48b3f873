@@ -4,7 +4,7 @@ import { createReadStream } from 'fs'
 
 const getPreSignedUploadUrlEndpointUrl = process.argv[2]
 if (getPreSignedUploadUrlEndpointUrl === undefined) {
-  throw new Error('Argument for pre signed upload url is missing!')
+  throw new Error('Argument for pre-signed upload url is missing!')
 }
 
 const urlSearchParams = new URLSearchParams()

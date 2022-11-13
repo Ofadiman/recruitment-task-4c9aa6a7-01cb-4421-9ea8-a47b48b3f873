@@ -8,6 +8,8 @@ import duration from 'dayjs/plugin/duration'
 import { s3MetadataAdapter } from '../utils/S3MetadataAdapter'
 import { s3Client } from '../utils/S3Client'
 import { z } from 'zod'
+import getenv from 'getenv'
+import { S3_TEMPORARY_FILES_BUCKET_KEY } from '../env'
 
 dayjs.extend(duration)
 
@@ -60,7 +62,7 @@ export const main = middy(
 
     const batchId = v4()
     const command = new PutObjectCommand({
-      Bucket: 'media-temporary-files-536155158c03',
+      Bucket: getenv(S3_TEMPORARY_FILES_BUCKET_KEY),
       Key: batchId,
       Metadata: {
         sizes: s3MetadataAdapter.serialize(queryStringParseResult.data.size),

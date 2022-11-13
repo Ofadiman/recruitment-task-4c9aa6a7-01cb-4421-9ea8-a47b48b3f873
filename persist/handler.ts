@@ -4,6 +4,8 @@ import { dynamodbClient } from '../utils/DynamoDBClient'
 import { PutItemCommand } from '@aws-sdk/client-dynamodb'
 import { s3Client } from '../utils/S3Client'
 import { HeadObjectCommand } from '@aws-sdk/client-s3'
+import getenv from 'getenv'
+import { DYNAMODB_METADATA_TABLE_KEY } from '../env'
 
 const firstOrThrow = <Type>(array: Type[]): Type => {
   const element = array[0]
@@ -41,7 +43,7 @@ export const main = middy(async (event: S3Event, _context: Context) => {
   }
 
   const putItemCommand = new PutItemCommand({
-    TableName: 'media-9ee1440f-bcae-4831-9b43-2de05865ce15',
+    TableName: getenv(DYNAMODB_METADATA_TABLE_KEY),
     Item: {
       id: {
         S: s3EventRecord.s3.object.key,

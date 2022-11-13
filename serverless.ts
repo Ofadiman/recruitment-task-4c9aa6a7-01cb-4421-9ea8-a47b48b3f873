@@ -1,4 +1,14 @@
 import type { AWS } from '@serverless/typescript'
+import {
+  DYNAMODB_METADATA_TABLE_KEY,
+  S3_PERMANENT_FILES_BUCKET_KEY,
+  S3_TEMPORARY_FILES_BUCKET_KEY,
+} from './env'
+
+const stage = '${opt:stage}'
+const dynamoDBTableName = `recruitment-task-metadata-${stage}`
+const s3TemporaryFilesBucketName = `recruitment-task-temporary-files-${stage}`
+const s3PermanentFilesBucketName = `recruitment-task-permanent-files-${stage}`
 
 const serverlessConfiguration: AWS = {
   service: 'media',
@@ -8,32 +18,29 @@ const serverlessConfiguration: AWS = {
     region: 'eu-west-1',
     name: 'aws',
     runtime: 'nodejs16.x',
+    environment: {
+      [S3_TEMPORARY_FILES_BUCKET_KEY]: s3TemporaryFilesBucketName,
+      [S3_PERMANENT_FILES_BUCKET_KEY]: s3PermanentFilesBucketName,
+      [DYNAMODB_METADATA_TABLE_KEY]: dynamoDBTableName,
+    },
+    // ${opt:*} or ${env:} syntax does not work in "iamRoleStatements", so for now I will leave "Resource" option set to "*".
     iamRoleStatements: [
       {
         Effect: 'Allow',
         Action: 's3:*',
-        Resource: 'arn:aws:s3:::media-temporary-files-536155158c03/*',
+        Resource: '*',
       },
       {
         Effect: 'Allow',
         Action: 's3:*',
-        Resource: 'arn:aws:s3:::media-permanent-files-3fa46c7e1508/*',
+        Resource: `*`,
       },
       {
         Effect: 'Allow',
         Action: 'dynamodb:*',
-        Resource:
-          'arn:aws:dynamodb:eu-west-1:715820034474:table/media-9ee1440f-bcae-4831-9b43-2de05865ce15',
+        Resource: `*`,
       },
     ],
-  },
-  custom: {
-    webpack: {
-      webpackConfig: 'webpack.config.js',
-      includeModules: true,
-      packager: 'npm',
-      excludeFiles: './**/*.test.ts',
-    },
   },
   functions: {
     hello: {
@@ -63,7 +70,7 @@ const serverlessConfiguration: AWS = {
       events: [
         {
           s3: {
-            bucket: 'media-temporary-files-536155158c03',
+            bucket: s3TemporaryFilesBucketName,
             event: 's3:ObjectCreated:*',
             forceDeploy: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#forcing-deploying-of-triggers
             existing: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#using-existing-buckets
@@ -76,7 +83,7 @@ const serverlessConfiguration: AWS = {
       events: [
         {
           s3: {
-            bucket: 'media-permanent-files-3fa46c7e1508',
+            bucket: s3PermanentFilesBucketName,
             event: 's3:ObjectCreated:*',
             forceDeploy: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#forcing-deploying-of-triggers
             existing: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#using-existing-buckets
@@ -105,10 +112,10 @@ const serverlessConfiguration: AWS = {
   },
   resources: {
     Resources: {
-      MediaTemporaryFiles536155158c03: {
+      S3TemporaryFiles: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: 'media-temporary-files-536155158c03',
+          BucketName: s3TemporaryFilesBucketName,
           LifecycleConfiguration: {
             Rules: [
               {
@@ -124,16 +131,16 @@ const serverlessConfiguration: AWS = {
           },
         },
       },
-      MediaPermanentFiles3fa46c7e1508: {
+      S3PermanentFiles: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          BucketName: 'media-permanent-files-3fa46c7e1508',
+          BucketName: s3PermanentFilesBucketName,
           VersioningConfiguration: {
             Status: 'Enabled',
           },
         },
       },
-      MediaTable: {
+      FilesTable: {
         Type: 'AWS::DynamoDB::Table',
         Properties: {
           AttributeDefinitions: [
@@ -157,7 +164,7 @@ const serverlessConfiguration: AWS = {
             },
           ],
           BillingMode: 'PAY_PER_REQUEST',
-          TableName: 'media-9ee1440f-bcae-4831-9b43-2de05865ce15',
+          TableName: dynamoDBTableName,
         },
       },
     },
