@@ -84,6 +84,24 @@ const serverlessConfiguration: AWS = {
         },
       ],
     },
+    getBatch: {
+      handler: 'get-batch/handler.main',
+      events: [
+        {
+          http: {
+            method: 'get',
+            path: 'get-batch/{batchId}',
+            request: {
+              parameters: {
+                paths: {
+                  batchId: true,
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
   },
   resources: {
     Resources: {
