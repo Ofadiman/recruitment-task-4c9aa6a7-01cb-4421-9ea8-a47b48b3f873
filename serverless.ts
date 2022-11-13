@@ -19,6 +19,11 @@ const serverlessConfiguration: AWS = {
         Action: 's3:*',
         Resource: 'arn:aws:s3:::media-permanent-files-3fa46c7e1508/*',
       },
+      {
+        Effect: 'Allow',
+        Action: 'dynamodb:*',
+        Resource: 'arn:aws:dynamodb:::media-9ee1440f-bcae-4831-9b43-2de05865ce15',
+      },
     ],
   },
   custom: {
@@ -94,6 +99,33 @@ const serverlessConfiguration: AWS = {
           VersioningConfiguration: {
             Status: 'Enabled',
           },
+        },
+      },
+      MediaTable: {
+        Type: 'AWS::DynamoDB::Table',
+        Properties: {
+          AttributeDefinitions: [
+            {
+              AttributeName: 'id',
+              AttributeType: 'S',
+            },
+            {
+              AttributeName: 'createdAt',
+              AttributeType: 'S',
+            },
+          ],
+          KeySchema: [
+            {
+              AttributeName: 'id',
+              KeyType: 'HASH',
+            },
+            {
+              AttributeName: 'createdAt',
+              KeyType: 'RANGE',
+            },
+          ],
+          BillingMode: 'PAY_PER_REQUEST',
+          TableName: 'media-9ee1440f-bcae-4831-9b43-2de05865ce15',
         },
       },
     },
