@@ -9,15 +9,7 @@ import { PutObjectCommandInput } from '@aws-sdk/client-s3/dist-types/commands/Pu
 import { GetObjectCommandInput } from '@aws-sdk/client-s3/dist-types/commands/GetObjectCommand'
 import getenv from 'getenv'
 import { S3_PERMANENT_FILES_BUCKET_KEY } from '../env'
-
-const firstOrThrow = <Type>(array: Type[]): Type => {
-  const element = array[0]
-  if (!element) {
-    throw new Error(`Array is empty.`)
-  }
-
-  return element
-}
+import { firstOrThrow } from '../utils/firstOrThrow'
 
 export const main = middy(async (event: S3Event, _context: Context) => {
   const s3EventRecord = firstOrThrow(event.Records)

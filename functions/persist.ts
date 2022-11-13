@@ -6,15 +6,7 @@ import { s3Client } from '../utils/S3Client'
 import { HeadObjectCommand } from '@aws-sdk/client-s3'
 import getenv from 'getenv'
 import { DYNAMODB_METADATA_TABLE_KEY } from '../env'
-
-const firstOrThrow = <Type>(array: Type[]): Type => {
-  const element = array[0]
-  if (!element) {
-    throw new Error(`Array is empty.`)
-  }
-
-  return element
-}
+import { firstOrThrow } from '../utils/firstOrThrow'
 
 export const main = middy(async (event: S3Event, _context: Context) => {
   const s3EventRecord = firstOrThrow(event.Records)
