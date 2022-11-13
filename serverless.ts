@@ -22,7 +22,8 @@ const serverlessConfiguration: AWS = {
       {
         Effect: 'Allow',
         Action: 'dynamodb:*',
-        Resource: 'arn:aws:dynamodb:::media-9ee1440f-bcae-4831-9b43-2de05865ce15',
+        Resource:
+          'arn:aws:dynamodb:eu-west-1:715820034474:table/media-9ee1440f-bcae-4831-9b43-2de05865ce15',
       },
     ],
   },
@@ -63,6 +64,19 @@ const serverlessConfiguration: AWS = {
         {
           s3: {
             bucket: 'media-temporary-files-536155158c03',
+            event: 's3:ObjectCreated:*',
+            forceDeploy: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#forcing-deploying-of-triggers
+            existing: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#using-existing-buckets
+          },
+        },
+      ],
+    },
+    persist: {
+      handler: 'persist/handler.main',
+      events: [
+        {
+          s3: {
+            bucket: 'media-permanent-files-3fa46c7e1508',
             event: 's3:ObjectCreated:*',
             forceDeploy: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#forcing-deploying-of-triggers
             existing: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#using-existing-buckets
