@@ -14,6 +14,11 @@ const serverlessConfiguration: AWS = {
         Action: 's3:*',
         Resource: 'arn:aws:s3:::media-temporary-files-536155158c03/*',
       },
+      {
+        Effect: 'Allow',
+        Action: 's3:*',
+        Resource: 'arn:aws:s3:::media-permanent-files-3fa46c7e1508/*',
+      },
     ],
   },
   custom: {
@@ -77,6 +82,15 @@ const serverlessConfiguration: AWS = {
               },
             ],
           },
+          VersioningConfiguration: {
+            Status: 'Enabled',
+          },
+        },
+      },
+      MediaPermanentFiles3fa46c7e1508: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          BucketName: 'media-permanent-files-3fa46c7e1508',
           VersioningConfiguration: {
             Status: 'Enabled',
           },
