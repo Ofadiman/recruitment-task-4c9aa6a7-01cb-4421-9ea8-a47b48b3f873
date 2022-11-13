@@ -19,7 +19,8 @@ export const main = middy(async (event: S3Event, _context: Context) => {
     Key: s3EventRecord.s3.object.key,
   }
 
-  const getObjectCommandOutput = await s3Client.send(new GetObjectCommand(getObjectCommandInput))
+  const getObjectCommand = new GetObjectCommand(getObjectCommandInput)
+  const getObjectCommandOutput = await s3Client.send(getObjectCommand)
   if (!getObjectCommandOutput.Body) {
     console.info(`Output body is empty.`)
     return
@@ -59,7 +60,8 @@ export const main = middy(async (event: S3Event, _context: Context) => {
       },
     }
 
-    return s3Client.send(new PutObjectCommand(putObjectCommandInput))
+    const putObjectCommand = new PutObjectCommand(putObjectCommandInput)
+    return s3Client.send(putObjectCommand)
   })
 
   await Promise.all(uploadFilesToS3Promises)

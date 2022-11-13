@@ -60,7 +60,7 @@ export const main = middy(
     }
 
     const batchId = v4()
-    const command = new PutObjectCommand({
+    const putObjectCommand = new PutObjectCommand({
       Bucket: getenv(S3_TEMPORARY_FILES_BUCKET_KEY),
       Key: batchId,
       Metadata: {
@@ -68,7 +68,7 @@ export const main = middy(
       },
     })
 
-    const preSignedUrl = await getSignedUrl(s3Client, command, {
+    const preSignedUrl = await getSignedUrl(s3Client, putObjectCommand, {
       expiresIn: dayjs.duration(1, 'minute').asSeconds(),
     })
 

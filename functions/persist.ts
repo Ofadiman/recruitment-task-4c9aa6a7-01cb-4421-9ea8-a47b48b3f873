@@ -15,7 +15,6 @@ export const main = middy(async (event: S3Event, _context: Context) => {
     Bucket: s3EventRecord.s3.bucket.name,
     Key: s3EventRecord.s3.object.key,
   })
-
   const headObjectCommandOutput = await s3Client.send(headObjectCommand)
   if (!headObjectCommandOutput.Metadata) {
     console.info(`Object does not have any metadata.`)
