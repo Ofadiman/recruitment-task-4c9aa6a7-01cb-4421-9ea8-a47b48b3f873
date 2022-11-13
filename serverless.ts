@@ -44,7 +44,7 @@ const serverlessConfiguration: AWS = {
   },
   functions: {
     hello: {
-      handler: 'hello/handler.main',
+      handler: 'functions/hello.main',
       events: [
         {
           http: {
@@ -55,7 +55,7 @@ const serverlessConfiguration: AWS = {
       ],
     },
     getPreSignedUploadUrl: {
-      handler: 'getPreSignedUploadUrl/handler.main',
+      handler: 'functions/getPreSignedUploadUrl.main',
       events: [
         {
           http: {
@@ -66,7 +66,7 @@ const serverlessConfiguration: AWS = {
       ],
     },
     resize: {
-      handler: 'resize/handler.main',
+      handler: 'functions/resize.main',
       events: [
         {
           s3: {
@@ -79,7 +79,7 @@ const serverlessConfiguration: AWS = {
       ],
     },
     persist: {
-      handler: 'persist/handler.main',
+      handler: 'functions/persist.main',
       events: [
         {
           s3: {
@@ -92,7 +92,7 @@ const serverlessConfiguration: AWS = {
       ],
     },
     getBatch: {
-      handler: 'get-batch/handler.main',
+      handler: 'functions/getBatch.main',
       events: [
         {
           http: {
