@@ -47,6 +47,19 @@ const serverlessConfiguration: AWS = {
         },
       ],
     },
+    resize: {
+      handler: 'resize/handler.main',
+      events: [
+        {
+          s3: {
+            bucket: 'media-temporary-files-536155158c03',
+            event: 's3:ObjectCreated:*',
+            forceDeploy: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#forcing-deploying-of-triggers
+            existing: true, // https://www.serverless.com/framework/docs/providers/aws/events/s3#using-existing-buckets
+          },
+        },
+      ],
+    },
   },
   resources: {
     Resources: {

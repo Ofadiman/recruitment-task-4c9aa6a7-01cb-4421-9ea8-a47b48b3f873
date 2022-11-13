@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "deploy:all": "aws-vault exec ofadiman -- npx serverless deploy --stage staging",
-    "deploy:getPreSignedUploadUrl": "aws-vault exec ofadiman -- npx serverless deploy --stage staging --force --function getPreSignedUploadUrl"
+    "deploy:getPreSignedUploadUrl": "aws-vault exec ofadiman -- npx serverless deploy --stage staging --force --function getPreSignedUploadUrl",
+    "deploy:resize": "aws-vault exec ofadiman -- npx serverless deploy --stage staging --force --function resize"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.21.0",
