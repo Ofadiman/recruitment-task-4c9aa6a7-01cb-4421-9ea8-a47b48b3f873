@@ -9,7 +9,7 @@ import { s3MetadataAdapter } from '../utils/S3MetadataAdapter'
 import { s3Client } from '../utils/S3Client'
 import { z } from 'zod'
 import getenv from 'getenv'
-import { S3_TEMPORARY_FILES_BUCKET_KEY } from '../env'
+import { S3_TEMPORARY_FILES_BUCKET_NAME_KEY } from '../env'
 
 dayjs.extend(duration)
 
@@ -62,7 +62,7 @@ export const main = middy(
 
     const batchId = v4()
     const putObjectCommand = new PutObjectCommand({
-      Bucket: getenv(S3_TEMPORARY_FILES_BUCKET_KEY),
+      Bucket: getenv(S3_TEMPORARY_FILES_BUCKET_NAME_KEY),
       Key: queryStringParseResult.data.name[0],
       Metadata: {
         sizes: s3MetadataAdapter.serialize(queryStringParseResult.data.size),

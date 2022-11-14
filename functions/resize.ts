@@ -8,7 +8,7 @@ import { v4 } from 'uuid'
 import { PutObjectCommandInput } from '@aws-sdk/client-s3/dist-types/commands/PutObjectCommand'
 import { GetObjectCommandInput } from '@aws-sdk/client-s3/dist-types/commands/GetObjectCommand'
 import getenv from 'getenv'
-import { S3_PERMANENT_FILES_BUCKET_KEY } from '../env'
+import { S3_PERMANENT_FILES_BUCKET_NAME_KEY } from '../env'
 import { firstOrThrow } from '../utils/firstOrThrow'
 
 export const main = middy(async (event: S3Event, _context: Context) => {
@@ -59,7 +59,7 @@ export const main = middy(async (event: S3Event, _context: Context) => {
   const uploadFilesToS3Promises = resizedAndFormattedFiles.map((resizedAndFormattedFile) => {
     const putObjectCommandInput: PutObjectCommandInput = {
       Key: `${v4()}.webp`,
-      Bucket: getenv(S3_PERMANENT_FILES_BUCKET_KEY),
+      Bucket: getenv(S3_PERMANENT_FILES_BUCKET_NAME_KEY),
       Body: resizedAndFormattedFile,
       Metadata: {
         'batch-id': batchIdMetadata,

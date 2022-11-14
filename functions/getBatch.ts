@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { dynamodbClient } from '../utils/DynamoDBClient'
 import { ScanCommand } from '@aws-sdk/client-dynamodb'
 import getenv from 'getenv'
-import { DYNAMODB_METADATA_TABLE_KEY, S3_PERMANENT_FILES_BUCKET_URL_KEY } from '../env'
+import { DYNAMODB_METADATA_TABLE_NAME_KEY, S3_PERMANENT_FILES_BUCKET_URL_KEY } from '../env'
 
 type DynamoDBMediaItem = {
   createdAt: { S: string }
@@ -35,7 +35,7 @@ export const main = middy(
           S: parsePathParamsResult.data.batchId,
         },
       },
-      TableName: getenv(DYNAMODB_METADATA_TABLE_KEY),
+      TableName: getenv(DYNAMODB_METADATA_TABLE_NAME_KEY),
     })
     const scanCommandOutput = await dynamodbClient.send(scanCommand)
 
