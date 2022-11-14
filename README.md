@@ -1,72 +1,44 @@
-<!--
-title: 'AWS NodeJS Example'
-description: 'This template demonstrates how to deploy a NodeJS function running on AWS Lambda using the traditional Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: nodeJS
-priority: 1
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Recruitment task
 
+The goal of the task is to write an application in Node.js that will allow you to upload a file to any cloud storage (e.g. [AWS S3](https://aws.amazon.com/s3/)) with the ability to resize images and save metadata to any database (e.g. [AWS DynamoDB](https://aws.amazon.com/dynamodb/)).
 
-# Serverless Framework AWS NodeJS Example
+# Running the application
 
-This template demonstrates how to deploy a NodeJS function running on AWS Lambda using the traditional Serverless Framework. The deployed function does not include any event definitions as well as any kind of persistence (database). For more advanced configurations check out the [examples repo](https://github.com/serverless/examples/) which includes integrations with SQS, DynamoDB or examples of functions that are triggered in `cron`-like manner. For details about configuration of specific `events`, please refer to our [documentation](https://www.serverless.com/framework/docs/providers/aws/events/).
+The application uses a [serverless framework](https://www.serverless.com/) and is designed to run in the cloud. This means that the application cannot be run locally.
 
-## Usage
+To deploy the application to the AWS cloud, you must have the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables configured. You can do it by e.g.
 
-### Deployment
+- Exporting variables in your current terminal session.
+- Using tools such as `aws-vault` to inject variables into the sub-process.
 
-In order to deploy the example, you need to run the following command:
+You can read more about deploying an application using serverless framework in the [official documentation](https://www.serverless.com/framework/docs/providers/aws/guide/deploying).
 
-```
-$ serverless deploy
-```
+# Architecture
 
-After running deploy, you should see output similar to:
+The application uses event-driven architecture to upload files and save them to the database.
 
-```bash
-Deploying aws-node-project to stage dev (us-east-1)
+The file is uploaded using a pre-signed URL. This solution allows you to limit the amount of data sent to the server and speed up the upload of the file, because it goes directly to file storage (AWS S3).
 
-✔ Service deployed to stack aws-node-project-dev (112s)
+# Process overview
 
-functions:
-  hello: aws-node-project-dev-hello (1.5 kB)
-```
+1. The client sends an HTTP request to the API Gateway to obtain a pre-signed URL to upload the file and identifier of the request `batchId`.
+2. The client uses the received pre-signed URL to upload the file directly to the S3 bucket which holds temporary files. This bucket is configured to automatically delete files after 30 days via [lifecycle rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html).
+3. Temporary files S3 bucket emits `s3:ObjectCreated:Put` event which triggers AWS Lambda function.
+4. The function processes the image to create multiple images with desired dimensions provided by the client and converts their format to `webp` to optimize their use on the web. The function then saves the images to the S3 bucket for permanent files.
+5. Permanent files S3 bucket emits `s3:ObjectCreated:Put` event which triggers AWS Lambda function.
+6. The function writes the metadata of the image to a dynamodb table.
+7. The client can now query all images using the received `batchId`.
 
-### Invocation
+# Testing the flow
 
-After successful deployment, you can invoke the deployed function by using the following command:
+Automatic flow testing is possible with the script `test-flow.ts`. To execute the script, enter the following command:
 
-```bash
-serverless invoke --function hello
-```
+- `npx ts-node scripts/test-flow.ts <api-gateway-url>`
 
-Which should result in response similar to the following:
+You can obtain `<api-gateway-url>` from the AWS console. Assuming that you have deployed your stack to eu-west-1 region:
 
-```json
-{
-    "statusCode": 200,
-    "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": {}\n}"
-}
-```
-
-### Local development
-
-You can invoke your function locally by using the following command:
-
-```bash
-serverless invoke local --function hello
-```
-
-Which should result in response similar to the following:
-
-```
-{
-    "statusCode": 200,
-    "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": \"\"\n}"
-}
-```
+1. Visit the [API Gateway](https://eu-west-1.console.aws.amazon.com/apigateway/main/apis?region=eu-west-1) website.
+2. Navigate to your API configuration page. You can find the API by `staging-media` name.
+3. On the left side menu, pick `Stages` option.
+4. Select `staging` stage.
+5. Copy the `Invoke URL` field value.
