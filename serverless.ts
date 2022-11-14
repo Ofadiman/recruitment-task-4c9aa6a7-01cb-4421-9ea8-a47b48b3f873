@@ -2,13 +2,16 @@ import type { AWS } from '@serverless/typescript'
 import {
   DYNAMODB_METADATA_TABLE_KEY,
   S3_PERMANENT_FILES_BUCKET_KEY,
+  S3_PERMANENT_FILES_BUCKET_URL_KEY,
   S3_TEMPORARY_FILES_BUCKET_KEY,
 } from './env'
 
 const stage = '${opt:stage}'
+const region = '${self:provider.region}'
 const dynamoDBTableName = `recruitment-task-metadata-${stage}`
 const s3TemporaryFilesBucketName = `recruitment-task-temporary-files-${stage}`
 const s3PermanentFilesBucketName = `recruitment-task-permanent-files-${stage}`
+const s3PermanentFilesBucketUrl = `https://${s3PermanentFilesBucketName}.s3.${region}.amazonaws.com/`
 
 const serverlessConfiguration: AWS = {
   service: 'media',
@@ -21,6 +24,7 @@ const serverlessConfiguration: AWS = {
     environment: {
       [S3_TEMPORARY_FILES_BUCKET_KEY]: s3TemporaryFilesBucketName,
       [S3_PERMANENT_FILES_BUCKET_KEY]: s3PermanentFilesBucketName,
+      [S3_PERMANENT_FILES_BUCKET_URL_KEY]: s3PermanentFilesBucketUrl,
       [DYNAMODB_METADATA_TABLE_KEY]: dynamoDBTableName,
     },
     // ${opt:*} or ${env:} syntax does not work in "iamRoleStatements", so for now I will leave "Resource" option set to "*".

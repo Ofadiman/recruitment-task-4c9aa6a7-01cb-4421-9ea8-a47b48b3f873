@@ -4,7 +4,13 @@ import { z } from 'zod'
 import { dynamodbClient } from '../utils/DynamoDBClient'
 import { ScanCommand } from '@aws-sdk/client-dynamodb'
 import getenv from 'getenv'
-import { DYNAMODB_METADATA_TABLE_KEY } from '../env'
+import { DYNAMODB_METADATA_TABLE_KEY, S3_PERMANENT_FILES_BUCKET_URL_KEY } from '../env'
+
+type DynamoDBMediaItem = {
+  createdAt: { S: string }
+  id: { S: string }
+  batchId: { S: string }
+}
 
 const batchParamsSchema = z
   .object({
@@ -33,9 +39,22 @@ export const main = middy(
     })
     const scanCommandOutput = await dynamodbClient.send(scanCommand)
 
+    if (!scanCommandOutput.Items) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify([]),
+      }
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify(scanCommandOutput.Items),
+      body: JSON.stringify(
+        (scanCommandOutput.Items as DynamoDBMediaItem[]).map((item) => ({
+          createdAt: item.createdAt.S,
+          batchId: item.batchId.S,
+          url: `${getenv(S3_PERMANENT_FILES_BUCKET_URL_KEY)}${item.id.S}`,
+        })),
+      ),
     }
   },
 )
