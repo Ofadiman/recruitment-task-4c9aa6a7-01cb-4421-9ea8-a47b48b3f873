@@ -15,6 +15,7 @@ const urlSearchParams = new URLSearchParams()
 urlSearchParams.append('size', '250x250')
 urlSearchParams.append('size', '500x500')
 urlSearchParams.append('size', '750x750')
+urlSearchParams.append('name', 'pepe_blanket.jpg')
 
 void (async () => {
   console.info(`Getting pre-signed url from lambda.`)

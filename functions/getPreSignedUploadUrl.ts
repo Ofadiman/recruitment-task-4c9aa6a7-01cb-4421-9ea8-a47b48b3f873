@@ -35,6 +35,7 @@ const sizeStringSchema = z.string().refine(
 
 const queryParametersSchema = z
   .object({
+    name: z.array(z.string()),
     size: z.array(sizeStringSchema).transform((value) => {
       return value.map((item) => {
         const [x, y] = item.split('x')
@@ -62,9 +63,10 @@ export const main = middy(
     const batchId = v4()
     const putObjectCommand = new PutObjectCommand({
       Bucket: getenv(S3_TEMPORARY_FILES_BUCKET_KEY),
-      Key: batchId,
+      Key: queryStringParseResult.data.name[0],
       Metadata: {
         sizes: s3MetadataAdapter.serialize(queryStringParseResult.data.size),
+        'batch-id': batchId,
       },
     })
 

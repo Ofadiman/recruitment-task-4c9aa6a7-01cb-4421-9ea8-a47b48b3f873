@@ -37,6 +37,12 @@ export const main = middy(async (event: S3Event, _context: Context) => {
     return
   }
 
+  const batchIdMetadata = getObjectCommandOutput.Metadata['batch-id']
+  if (!batchIdMetadata) {
+    console.info(`Object is missing "batch-id" metadata key.`)
+    return
+  }
+
   const uint8Array = await getObjectCommandOutput.Body.transformToByteArray()
 
   const sizes = s3MetadataAdapter.deserialize<{ x: number; y: number }[]>(sizesMetadata)
@@ -56,7 +62,7 @@ export const main = middy(async (event: S3Event, _context: Context) => {
       Bucket: getenv(S3_PERMANENT_FILES_BUCKET_KEY),
       Body: resizedAndFormattedFile,
       Metadata: {
-        'batch-id': s3EventRecord.s3.object.key,
+        'batch-id': batchIdMetadata,
       },
     }
 
